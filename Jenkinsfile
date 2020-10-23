@@ -10,27 +10,41 @@ pipeline {
             }
         }
         stage('sonarqube') {
-            agent {
-                docker { image 'busybox' }
-            }
             steps {
-                sh 'echo sonarqube'
+                withSonarQubeEnv("SonarCloud")
+                {
+                    sh "./gradlew sonarqube -Dsonar.branch.name=\"dev\""
+                    sleep(10)
+                }
+            }
+        }
+        stage("sonar check") {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
         stage('docker build') {
-            agent {
-                docker { image 'busybox' }
-            }
             steps {
-                sh 'echo docker build'
+                script {
+                   docker.withTool('docker') {
+                        repoId = "dougliu/samplesb"
+                        image = docker.build(repoId)
+                        }
+                    }
+                }
             }
         }
         stage('docker push') {
-            agent {
-                docker { image 'busybox' }
-            }
             steps {
-                sh 'echo docker push'
+                script {
+                   docker.withTool('docker') {
+                        docker.withRegistry("https://registry.hub.docker.com", "dockercred") {
+                        image.push()
+                        }
+                    }
+                }
             }
         }
         stage('app deploy') {
