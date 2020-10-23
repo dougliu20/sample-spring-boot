@@ -1,5 +1,6 @@
 pipeline {
-    agent any
+
+    agent none
 
     stages {
         stage('get resources') {
@@ -8,6 +9,9 @@ pipeline {
             }
         }
         stage('build') {
+            agent {
+                gradle 'gradle'
+            }
             steps {
                 sh 'chmod +x gradlew && ./gradlew build'
             }
