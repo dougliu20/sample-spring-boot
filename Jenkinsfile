@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     tools {
-        gradlew 'gradle'
+        gradle 'gradle'
     }
 
     stages {
