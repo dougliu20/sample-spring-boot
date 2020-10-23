@@ -26,28 +26,18 @@ pipeline {
                 }
             }
         }
-        stage('docker build') {
+        stage('docker build and push') {
             steps {
                 script {
                     docker.withTool('docker') {
                         repoId = 'dougliu/samplesb'
                         image = docker.build(repoId)
+                        image.push()
                     }
                 }
             }
         }
-    }
-        stage('docker push') {
-            steps {
-                script {
-                docker.withTool('docker') {
-                        docker.withRegistry('https://registry.hub.docker.com', 'dockercred') {
-                        image.push()
-                        }
-                }
-                }
-            }
-        }
+        
         stage('deploy') {
             steps {
                 sh 'echo kube deploy'
