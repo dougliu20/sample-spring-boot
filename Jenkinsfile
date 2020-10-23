@@ -55,4 +55,5 @@ pipeline {
                 sh 'echo kube deploy'
             }
         }
+    }
 }
