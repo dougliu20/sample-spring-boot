@@ -47,9 +47,6 @@ pipeline {
             steps {
                 script {
                     docker.withTool('docker') {
-                        repoId = 'dougliu/samplesb'
-                        image = docker.build(repoId)
-                        image.push()
                         docker.withRegistry("https://registry.hub.docker.com", "dockercred") {
                             image.push()
                         }
