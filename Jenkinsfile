@@ -2,10 +2,12 @@ pipeline {
     agent none
 
     stages {
-        stage('build') {
-            agent {
-                docker { image 'gradle' }
+        stage('get resources') {
+            steps {
+                git url: "https://github.com/dougliu20/sample-spring-boot", branch: "dev"
             }
+        }
+        stage('build') {
             steps {
                 sh 'chmod +x gradlew && ./gradlew build'
             }
