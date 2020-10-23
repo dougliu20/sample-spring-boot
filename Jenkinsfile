@@ -1,5 +1,6 @@
 pipeline {
     agent none
+
     stages {
         stage('build') {
             agent {
@@ -11,14 +12,14 @@ pipeline {
         }
         stage('sonarqube') {
             steps {
-                withSonarQubeEnv("SonarCloud")
+                withSonarQubeEnv('SonarCloud')
                 {
                     sh "./gradlew sonarqube -Dsonar.branch.name=\"dev\""
                     sleep(10)
                 }
             }
         }
-        stage("sonar check") {
+        stage('sonar check') {
             steps {
                 timeout(time: 1, unit: 'HOURS') {
                     waitForQualityGate abortPipeline: true
@@ -28,31 +29,28 @@ pipeline {
         stage('docker build') {
             steps {
                 script {
-                   docker.withTool('docker') {
-                        repoId = "dougliu/samplesb"
+                    docker.withTool('docker') {
+                        repoId = 'dougliu/samplesb'
                         image = docker.build(repoId)
-                        }
                     }
                 }
             }
         }
+    }
         stage('docker push') {
             steps {
                 script {
-                   docker.withTool('docker') {
-                        docker.withRegistry("https://registry.hub.docker.com", "dockercred") {
+                docker.withTool('docker') {
+                        docker.withRegistry('https://registry.hub.docker.com', 'dockercred') {
                         image.push()
                         }
-                    }
+                }
                 }
             }
         }
-        stage('app deploy') {
-            agent {
-                docker { image 'busybox' }
-            }
+        stage('deploy') {
             steps {
                 sh 'echo kube deploy'
             }
         }
-    }
+}
