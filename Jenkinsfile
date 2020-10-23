@@ -56,7 +56,7 @@ pipeline {
         }
         stage('deploy') {
             steps {
-                sh 'echo kube deploy'
+                sh 'kubectl rollout restart deployment/sample-spring-boot'
             }
         }
     }

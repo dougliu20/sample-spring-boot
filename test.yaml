@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: sample-sb
+    labels:
+        app: sample-sb
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: sample-sb
+    template:
+        metadata:
+            labels:
+                app: sample-sb
+        spec:
+            containers:
+            -   name: sample-sb
+                image: dougliu/samplesb:latest
+                imagePullPolicy: Always
+            restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+    name: sample-sb-service
+spec:
+    type: LoadBalancer
+    selector:
+        app: sample-sb
+    ports:
+        - port: 8082
+          name: sample-sb
+          targetPort: 8080
+          nodePort: 30006
